@@ -4,8 +4,9 @@ Class {
 	#instVars : [
 		'projectsDropList',
 		'packagesList',
+		'selectedPackagesLabel',
 		'analyseButton',
-		'typosList'
+		'notebook'
 	],
 	#category : #Proofreader
 }
@@ -20,14 +21,20 @@ Proofreader class >> defaultSpec [
 	^ SpBoxLayout newHorizontal
 		spacing: 2;
 		add: (SpBoxLayout newVertical
-			spacing: 2;
+			spacing: 3;
 			add: 'Select a project' height: self labelHeight;
 			add: #projectsDropList height: self buttonHeight;
 			add: 'Select packages' height: self labelHeight;
 			add: #packagesList;
-			add: #analyseButton height: self buttonHeight;
+			add: (SpBoxLayout newHorizontal
+				add: (SpBoxLayout newVertical
+					add: '';
+					add: #selectedPackagesLabel height: self labelHeight;
+					yourself);
+				add: #analyseButton width: self buttonWidth;
+				yourself) height: self buttonHeight + 5;
 			yourself) width: 250;
-		add: #typosList;
+		add: #notebook;
 		yourself.
 ]
 
@@ -53,6 +60,28 @@ Proofreader class >> open [
 	self new openWithSpec
 ]
 
+{ #category : #'as yet unclassified' }
+Proofreader >> analyseSelectedPackages [
+	| packages classes methods |
+	
+	packages := packagesList selectedItems.
+	classes := packages flatCollect: [ :package | package classes ].
+	methods := classes flatCollect: [ :aClass | aClass methods ].
+	
+	notebook removeAll.
+	
+	self proposeMethodNamesCorrectionsFor: methods.
+]
+
+{ #category : #initialization }
+Proofreader >> connectPresenters [
+	packagesList whenSelectionChangedDo: [ 
+		selectedPackagesLabel label: (packagesList selectedItems size asString, ' packages selected') ].
+	
+	analyseButton action: [ 
+		self analyseSelectedPackages ].
+]
+
 { #category : #initialization }
 Proofreader >> initializePresenters [
 
@@ -62,13 +91,18 @@ Proofreader >> initializePresenters [
 		items: Smalltalk image packages;
 		display: [ :package | package name ];
 		displayIcon: [ Smalltalk ui iconNamed: #package ];
+		beMultipleSelection;
+		yourself.
+		
+	selectedPackagesLabel := self newLabel
+		label: '0 packages selected';
 		yourself.
 		
 	analyseButton := self newButton
 		label: 'Analyse';
 		yourself.
 		
-	typosList := self newList.
+	notebook := self newNotebook.
 ]
 
 { #category : #initialization }
@@ -78,4 +112,12 @@ Proofreader >> initializeWindow: aWindowPresenter [
 	aWindowPresenter
 		title: self class defaultTitle;
 		initialExtent: self class defaultExtent.
+]
+
+{ #category : #'as yet unclassified' }
+Proofreader >> proposeMethodNamesCorrectionsFor: aCollectionOfMethods [
+	notebook addPage: (self newNotebookPage
+		title: ('Method names (', aCollectionOfMethods size asString, ')');
+		presenterProvider: [ self instantiate: ProofreaderMethodNamesCorrections ];
+		yourself).
 ]
