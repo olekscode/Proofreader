@@ -24,7 +24,7 @@ If you want to add a dependency on `Proofreader` to your project, include the fo
 ```Smalltalk
 spec
   baseline: 'Proofreader'
-  with: [ spec repository: 'github://pharo-ai/Proofreader/src' ].
+  with: [ spec repository: 'github://olekscode/Proofreader/src' ].
 ```
 
 If you are new to baselines and Metacello, check out the [Baselines](https://github.com/pharo-open-documentation/pharo-wiki/blob/master/General/Baselines.md) tutorial on Pharo Wiki.
