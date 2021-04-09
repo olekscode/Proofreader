@@ -1,8 +1,8 @@
 # Proofreader
 
-![Build status](https://github.com/pharo-ai/Proofreader/workflows/CI/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/pharo-ai/Proofreader/badge.svg?branch=master)](https://coveralls.io/github/pharo-ai/Proofreader?branch=master)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/pharo-ai/Proofreader/master/LICENSE)
+![Build status](https://github.com/olekscode/Proofreader/workflows/CI/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/olekscode/Proofreader/badge.svg?branch=master)](https://coveralls.io/github/olekscode/Proofreader?branch=master)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/olekscode/Proofreader/master/LICENSE)
 
 A tool for proofreading source code and correcting language mistakes (e.g. typos).
 
@@ -24,7 +24,7 @@ If you want to add a dependency on `Proofreader` to your project, include the fo
 ```Smalltalk
 spec
   baseline: 'Proofreader'
-  with: [ spec repository: 'github://pharo-ai/Proofreader/src' ].
+  with: [ spec repository: 'github://olekscode/Proofreader/src' ].
 ```
 
 If you are new to baselines and Metacello, check out the [Baselines](https://github.com/pharo-open-documentation/pharo-wiki/blob/master/General/Baselines.md) tutorial on Pharo Wiki.
