@@ -6,7 +6,9 @@ Class {
 		'packagesList',
 		'selectedPackagesLabel',
 		'analyseButton',
-		'notebook'
+		'notebook',
+		'corrector',
+		'unknownWords'
 	],
 	#category : #Proofreader
 }
@@ -83,6 +85,20 @@ Proofreader >> connectPresenters [
 ]
 
 { #category : #initialization }
+Proofreader >> initialize [
+	| languageFile |
+	super initialize.
+	
+	corrector := AISpellingCorrector new.
+	
+	languageFile := 'pharo-local/iceberg/pharo-ai/spelling-correction/data/english.json'
+		asFileReference.
+		
+	corrector loadLanguageModelFrom: languageFile.
+
+]
+
+{ #category : #initialization }
 Proofreader >> initializePresenters [
 
 	projectsDropList := self newDropList.
@@ -116,8 +132,35 @@ Proofreader >> initializeWindow: aWindowPresenter [
 
 { #category : #'as yet unclassified' }
 Proofreader >> proposeMethodNamesCorrectionsFor: aCollectionOfMethods [
+	| words |
+	
+	unknownWords := Set new.
+	
+	aCollectionOfMethods
+		do: [ :method |
+			words := (method sourceCode substrings flatCollect: [ :token | token splitIdentifierName ]) asSet
+				select: [ :word |
+					word size > 2 and: [
+						word isAllAlphaNumerics and: [
+							word isAllDigits not ] ] ]
+				thenCollect: [ :word | word asLowercase asProofreaderWord ].
+			
+			words
+				reject: [ :word | corrector isKnownWord: word asString ]
+				thenDo: [ :word |
+					(unknownWords like: word ifAbsent: [ unknownWords add: word ])
+						methods add: method ] ]
+		displayingProgress: [ :method | method selector ].
+			
+	unknownWords
+		do: [ :word | word corrections addAll: (corrector correctionsFor: word asString) ]
+		displayingProgress: [ :word | word ].
+
 	notebook addPage: (self newNotebookPage
 		title: ('Method names (', aCollectionOfMethods size asString, ')');
-		presenterProvider: [ self instantiate: ProofreaderMethodNamesCorrections ];
+		presenterProvider: [
+			(self instantiate: ProofreaderMethodNamesCorrections)
+				showWords: unknownWords;
+				yourself ];
 		yourself).
 ]

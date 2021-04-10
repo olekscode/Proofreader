@@ -30,9 +30,8 @@ ProofreaderMethodNamesCorrections >> initializePresenters [
 ]
 
 { #category : #'accessing model' }
-ProofreaderMethodNamesCorrections >> setModelBeforeInitialization: aCollectionOfCorrections [
+ProofreaderMethodNamesCorrections >> showWords: aCollectionOfWords [
 
 	methodNames
-		items: aCollectionOfCorrections;
-		display: [ :correction | correction key ].
+		items: aCollectionOfWords asArray.
 ]
